@@ -35,6 +35,7 @@
 
 #include "stdint.h"
 #include "stdbool.h"
+#include "ade9153a_errors.h"
 
 /* Configuration Registers */
 #define ADE9153A_AI_PGAGAIN 0x000A /* Signal on IAN, current channel gain=16x */
@@ -66,10 +67,10 @@
 #define ADE9153A_TEMP_CFG 0x000C /* Temperature sensor configuration */
 
 /* Ideal Calibration Values for ADE9153A Shield Based on Sensor Values */
-#define CAL_IRMS_CC 0.838190 // (uA/code)
-#define CAL_VRMS_CC 13.41105 // (uV/code)
-#define CAL_POWER_CC 1508.743 // (uW/code) Applicable for Active, reactive and apparent power
-#define CAL_ENERGY_CC 0.858307 // (uWhr/xTHR_HI code)Applicable for Active, reactive and apparent energy
+#define CAL_IRMS_CC 0.838190f // (uA/code)
+#define CAL_VRMS_CC 13.41105f // (uV/code)
+#define CAL_POWER_CC 1508.743f // (uW/code) Applicable for Active, reactive and apparent power
+#define CAL_ENERGY_CC 0.858307f // (uWhr/xTHR_HI code)Applicable for Active, reactive and apparent energy
 
 typedef struct EnergyRegs {
     int32_t ActiveEnergyReg;
@@ -78,7 +79,7 @@ typedef struct EnergyRegs {
     float ActiveEnergyValue;
     float FundReactiveEnergyValue;
     float ApparentEnergyValue;
-};
+} EnergyRegs_t;
 
 typedef struct PowerRegs {
     int32_t ActivePowerReg;
@@ -87,21 +88,21 @@ typedef struct PowerRegs {
     float FundReactivePowerValue;
     int32_t ApparentPowerReg;
     float ApparentPowerValue;
-};
+} PowerRegs_t;
 
 typedef struct RMSRegs {
     int32_t CurrentRMSReg;
     float CurrentRMSValue;
     int32_t VoltageRMSReg;
     float VoltageRMSValue;
-};
+} RMSRegs_t;
 
 typedef struct HalfRMSRegs {
     int32_t HalfCurrentRMSReg;
     float HalfCurrentRMSValue;
     int32_t HalfVoltageRMSReg;
     float HalfVoltageRMSValue;
-};
+} HalfRMSRegs_t;
 
 typedef struct PQRegs {
     int32_t PowerFactorReg;
@@ -110,7 +111,7 @@ typedef struct PQRegs {
     float FrequencyValue;
     int32_t AngleReg_AV_AI;
     float AngleValue_AV_AI;
-};
+} PQRegs_t;
 
 typedef struct AcalRegs {
     int32_t AcalAICCReg;
@@ -119,7 +120,7 @@ typedef struct AcalRegs {
     int32_t AcalAVCCReg;
     float AVCC;
     int32_t AcalAVCERTReg;
-};
+} AcalRegs_t;
 
 typedef struct Temperature {
     uint16_t TemperatureReg;
@@ -131,37 +132,36 @@ typedef enum SPIOperation {
     SPI_READ = 8
 } SPIOperation_t;
 
-void SPI_Write_16(uint16_t address, uint16_t data);
+ADE9153AStatus_t ade9153a_spi_write_16(uint16_t address, uint16_t data);
 
-void SPI_Write_32(uint16_t address, uint32_t data);
+ADE9153AStatus_t ade9153a_spi_write_32(uint16_t address, uint32_t data);
 
-uint16_t SPI_Read_16(uint16_t address);
+uint16_t ade9153a_spi_read_16(uint16_t address);
 
-uint32_t SPI_Read_32(uint16_t address);
+uint32_t ade9153a_spi_read_32(uint16_t address);
 
-/* ADE9153A Calculated Parameter Read Functions */
-void ReadEnergyRegs(EnergyRegs *Data);
+void ade9153a_read_energy_regs(EnergyRegs_t *data);
 
-void ReadPowerRegs(PowerRegs *Data);
+void ade9153a_read_power_regs(PowerRegs_t *data);
 
-void ReadRMSRegs(RMSRegs *Data);
+void ade9153a_read_rms_regs(RMSRegs_t *Data);
 
-void ReadHalfRMSRegs(HalfRMSRegs *Data);
+void ade9153a_read_half_rms_regs(HalfRMSRegs_t *data);
 
-void ReadPQRegs(PQRegs *Data);
+void ade9153a_read_pq_regs(PQRegs_t *data);
 
-void ReadAcalRegs(AcalRegs *Data);
+void ade9153a_read_acal_regs(AcalRegs_t *data);
 
-bool StartAcal_AINormal(void);
+bool ade9153a_start_acal_ai_normal();
 
-bool StartAcal_AITurbo(void);
+bool ade9153a_start_acal_ai_turbo();
 
-bool StartAcal_AV(void);
+bool ade9153a_start_acal_av();
 
-void StopAcal(void);
+void ade9153a_stop_acal();
 
-bool ApplyAcal(float AICC, float AVCC);
+bool ade9153a_apply_acal(float AICC, float AVCC);
 
-void ReadTemperature(Temperature_t *data);
+void ade9153a_read_temperature(Temperature_t *data);
 
 #endif
